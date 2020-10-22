@@ -1,4 +1,5 @@
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import jdk.jshell.SourceCodeAnalysis.QualifiedNames;
 
@@ -25,7 +26,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	 * @return
 	 */
 	public boolean isEmpty() {
-		return front == rear;
+		return n == 0;
 	}	
 	
 	/**
@@ -40,13 +41,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	 * @param item
 	 */
 	public void enqueue(Item item) {
-			
+		
 		if(n == q.length) {
 			resize(2 * q.length);
 		}
-
+		
+		if(n > 0) rear++;
+		
 		q[n++] = item;
-		rear = (rear + 1) % n;
 	}
 	
 	/**
@@ -55,18 +57,40 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	 */
 	private void resize(int capacity) {
 		Item[] copy = (Item[]) new Object[capacity];
+		
 		for(int i = 0; i < n; i++) {
-			copy[i] = q[i];
+			copy[i] = q[front + i];
 		}
+		
 		q = copy;
+		
+		// reset front and rear indexes
+		front = 0;
+		rear = n - 1;
 	}
 	
 	/**
 	 * remove and return a random item
 	 * @return
 	 */
-	public Item dequeue() {
-		return null;
+	public Item dequeue() {		
+		if(isEmpty())
+			throw new NoSuchElementException("Queue is empty");
+		
+		Item item = q[front];
+		q[front] = null;
+		
+		front++;
+		n--;
+		
+		// halve the size of the array if one-quarter size
+		if(n > 0 && n == q.length/4) {
+			resize(q.length/2);
+		} else if(front > rear) {
+			front = 0;
+		}
+		
+		return item;
 	}
 	
 	/**
@@ -81,14 +105,38 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		
 		RandomizedQueue<String> q = new RandomizedQueue<String>();
 		
+		System.out.println("Queued: a");
 		q.enqueue("a");
+		System.out.println("Queued: b");
 		q.enqueue("b");
+		System.out.println("Queued: c");
 		q.enqueue("c");
+		System.out.println("Queued: d");
 		q.enqueue("d");
-		System.out.println(q.size());
-		System.out.println(q.front);
-		System.out.println(q.rear);
-
+		System.out.println("Size: " + q.size());
+		System.out.println("Front: " + q.front);
+		System.out.println("Rear: " + q.rear);
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Size: " + q.size());
+		System.out.println("Front: " + q.front);
+		System.out.println("Rear: " + q.rear);
+		System.out.println("Queued: x");
+		q.enqueue("x");
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Queued: y");
+		q.enqueue("y");
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Queued: z");
+		q.enqueue("z");
+		System.out.println("Dequeued: " + q.dequeue());
+		System.out.println("Queued: d, e, and f");
+		q.enqueue("d");
+		q.enqueue("e");
+		q.enqueue("f");
+		System.out.println("Size: " + q.size());
 	}
 
 	/**
