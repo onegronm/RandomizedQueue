@@ -145,7 +145,36 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	 */
 	@Override
 	public Iterator<Item> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayIterator();
+	}
+	
+	private class ArrayIterator implements Iterator<Item> 
+	{
+		private int i = n;
+		private Item[] s;
+		
+		public ArrayIterator() {
+			s = (Item[]) new Object[n];
+			
+			for(int i = 0; i < n; i++) {
+				//int rand = StdRandom.uniform(n);
+			}
+		}
+		
+		public boolean hasNext() {
+			return i > 0;
+		}
+		
+		public Item next() {
+			if(isEmpty())
+				throw new NoSuchElementException("Queue is empty.");
+			
+			return q[--i];
+		}
+		
+		public void remove() {
+			throw new UnsupportedOperationException("Remove is not supported.");
+		}
+		
 	}
 }
