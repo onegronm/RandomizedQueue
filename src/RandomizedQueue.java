@@ -46,17 +46,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	public void enqueue(Item item) {
 
 		// if we have reached array capacity but there are indexes available at the front
-		// we can shift the elements to the left or just resize again. For simplicity, I will resize but shifting
-		// would be ideal for space efficiency.
+		// we can wrap around
 
-		if(n == q.length || rear == q.length) {
+		if(n == q.length) {
 			resize(2 * q.length);
 		}
 
 		q[rear++] = item;
-		// increment rear only if n > 0 so we don't
-		// increment rear to 1 when there's only one item in the array
-		// if(n > 0) rear++;
+
+		// wrap around
+		if (rear == q.length) rear = 0;
+
 		n++;
 	}
 	
@@ -101,9 +101,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		// halve the size of the array if one-quarter size
 		if(n > 0 && n == q.length/4) {
 			resize(q.length/2);
-		} else if(front > rear) {
-			front = 0;
 		}
+
+//		else if(front > rear) {
+//			front = 0;
+//		}
+
+		// wrap around
+		if (front == q.length) front = 0;
 
 		
 		return item;
