@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 /**
  * @author omarn
  * A randomized queue is similar to a stack or queue, except that the item removed is chosen uniformly at random among items in the data structure. 
+ * Head of the queue is on the left and inclusive
+ * Tail of the queue is on the right and exclusive
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
@@ -42,14 +44,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	 * @param item
 	 */
 	public void enqueue(Item item) {
-		
-		if(n == q.length) {
+
+		// if we have reached array capacity but there are indexes available at the front
+		// we can shift the elements to the left or just resize again. For simplicity, I will resize but shifting
+		// would be ideal for space efficiency.
+
+		if(n == q.length || rear == q.length) {
 			resize(2 * q.length);
 		}
-		
-		if(n > 0) rear++;
-		
-		q[n++] = item;
+
+		q[rear++] = item;
+		// increment rear only if n > 0 so we don't
+		// increment rear to 1 when there's only one item in the array
+		// if(n > 0) rear++;
+		n++;
 	}
 	
 
@@ -64,8 +72,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		
 		// reset front and rear indexes
 		front = 0;
-		rear = n - 1;
+		rear = n;
 	}
+
+	private void shift() {
+
+	}
+
 	
 	/**
 	 * remove and return a random item
@@ -77,9 +90,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		
 		Item item = q[front];
 		q[front] = null;
-		
-		front++;
+
 		n--;
+		if (n > 0) front++;
+		else {
+			front = 0;
+			rear = 0;
+		}
 		
 		// halve the size of the array if one-quarter size
 		if(n > 0 && n == q.length/4) {
@@ -87,6 +104,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		} else if(front > rear) {
 			front = 0;
 		}
+
 		
 		return item;
 	}
@@ -101,8 +119,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	
 	public static void main(String[] args) {
 		
+
 		RandomizedQueue<String> q = new RandomizedQueue<String>();
-		
+		q.enqueue("a");
+		q.enqueue("b");
+		q.enqueue("c");
+		q.dequeue();
+		q.dequeue();
+		q.enqueue("a");
+
+		q = new RandomizedQueue<String>();
 		System.out.println("Queued: a");
 		q.enqueue("a");
 		System.out.println("Queued: b");
@@ -146,6 +172,22 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 				StdOut.print(a + "-" + b + " ");
 			StdOut.println();
 		}
+
+		q = new RandomizedQueue<String>();
+		q.enqueue("a");
+		q.enqueue("b");
+		q.enqueue("c");
+		q.enqueue("d");
+		q.enqueue("e");
+		q.enqueue("f");
+		q.dequeue();
+		q.enqueue("g");
+		q.enqueue("h");
+		q.dequeue();
+		q.enqueue("i");
+		q.enqueue("j");
+		q.dequeue();
+		q.enqueue("k");
 	}
 
 	/**
@@ -187,6 +229,5 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		public void remove() {
 			throw new UnsupportedOperationException("Remove is not supported.");
 		}
-		
 	}
 }
